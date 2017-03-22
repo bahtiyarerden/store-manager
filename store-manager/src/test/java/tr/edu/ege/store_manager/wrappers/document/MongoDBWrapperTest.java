@@ -20,7 +20,7 @@ public class MongoDBWrapperTest {
 	@Test
 	public void execution() throws Exception {
 		AbstractWrapper wrapper = WrapperFactory.create(Wrappers.MongoDB);
-		String result = wrapper.executeTransform("");
+		String result = wrapper.executeTransform("{\"title\" : \"Casino (1995)\"}");
 		assertEquals("Transformed MongoDB Result", result);
 	}
 
