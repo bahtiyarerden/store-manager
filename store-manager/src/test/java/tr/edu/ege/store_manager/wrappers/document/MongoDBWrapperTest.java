@@ -1,9 +1,19 @@
 package tr.edu.ege.store_manager.wrappers.document;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.junit.Test;
 
+import tr.edu.ege.store_manager.MovieVocabulary;
 import tr.edu.ege.store_manager.wrappers.AbstractWrapper;
 import tr.edu.ege.store_manager.wrappers.WrapperFactory;
 import tr.edu.ege.store_manager.wrappers.Wrappers;
@@ -22,6 +32,15 @@ public class MongoDBWrapperTest {
 		AbstractWrapper wrapper = WrapperFactory.create(Wrappers.MongoDB);
 		String result = wrapper.executeTransform("{\"title\" : \"Casino (1995)\"}");
 		assertEquals("Transformed MongoDB Result", result);
+	}
+
+	@Test
+	public void string2ModelTransformation() throws Exception {
+		AbstractWrapper wrapper = WrapperFactory.create(Wrappers.MongoDB);
+		String result = wrapper.executeTransform("{\"title\" : \"Casino (1995)\"}");
+		Model model = ModelFactory.createDefaultModel();
+		RDFDataMgr.read(model, new ByteArrayInputStream(result.getBytes()), Lang.RDFJSON);
+		assertTrue(model.contains(null, ResourceFactory.createProperty(MovieVocabulary.MOVIE_GENRE_PRP_URI)));
 	}
 
 }

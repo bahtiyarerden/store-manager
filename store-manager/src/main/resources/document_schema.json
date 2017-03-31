@@ -1,0 +1,6 @@
+{
+	"_id": "org.bson.types.ObjectId",
+	"movieId": "java.lang.String",
+	"title": "java.lang.String",
+	"genres": "java.lang.String"
+}
