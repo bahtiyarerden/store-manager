@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDF;
 import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
@@ -33,6 +34,9 @@ public class RedisTransformationStrategy extends TransformerStrategy {
 		Model model = ModelFactory.createDefaultModel();
 		Resource localMovieRsc = ResourceFactory.createResource(MovieVocabulary.MOVIE_RSC_BASE_URI + key);
 		model.add(createValueStatement(localMovieRsc, MovieVocabulary.MOVIE_ID_PRP_URI, key, XSDDatatype.XSDstring));
+		model.add(createObjectStatement(localMovieRsc, RDF.type.getURI(),
+				ResourceFactory.createResource(MovieVocabulary.MOVIE_TYPE_RSC_URI)));
+
 		if (jsonArray.size() == 1) {
 			addImdbRsc(jsonArray.get(0), model, localMovieRsc);
 
@@ -52,6 +56,8 @@ public class RedisTransformationStrategy extends TransformerStrategy {
 		model.add(createValueStatement(tmdbMovieRsc, MovieVocabulary.MOVIE_ID_PRP_URI, jsonElement.getAsString(),
 				XSDDatatype.XSDstring));
 		model.add(createObjectStatement(localMovieRsc, OWL.sameAs.getURI(), tmdbMovieRsc));
+		model.add(createObjectStatement(tmdbMovieRsc, RDF.type.getURI(),
+				ResourceFactory.createResource(MovieVocabulary.TMDB_TYPE_RSC_URI)));
 	}
 
 	private void addImdbRsc(JsonElement jsonElement, Model model, Resource localMovieRsc) {
@@ -60,6 +66,8 @@ public class RedisTransformationStrategy extends TransformerStrategy {
 		model.add(createObjectStatement(localMovieRsc, OWL.sameAs.getURI(), imdbMovieRsc));
 		model.add(createValueStatement(imdbMovieRsc, MovieVocabulary.MOVIE_ID_PRP_URI, jsonElement.getAsString(),
 				XSDDatatype.XSDstring));
+		model.add(createObjectStatement(imdbMovieRsc, RDF.type.getURI(),
+				ResourceFactory.createResource(MovieVocabulary.IMDB_TYPE_RSC_URI)));
 	}
 
 	private Statement createValueStatement(Resource rsc, String prpUri, Object objectVal, XSDDatatype datatype) {

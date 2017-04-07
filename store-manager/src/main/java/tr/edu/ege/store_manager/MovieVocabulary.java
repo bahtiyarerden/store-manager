@@ -13,5 +13,7 @@ public class MovieVocabulary {
 	public static final String MOVIE_GENRE_PRP_URI = MOVIE_ONT_BASE_URI + "genre";
 	public static final String IMDB_RSC_BASE_URI = BASE_URI + "imdb/" + RESOURCE_PATTERN;
 	public static final String TMDB_RSC_BASE_URI = BASE_URI + "tmdb/" + RESOURCE_PATTERN;
-
+	public static final String MOVIE_TYPE_RSC_URI = MOVIE_ONT_BASE_URI + "movie";
+	public static final String IMDB_TYPE_RSC_URI = MOVIE_ONT_BASE_URI + "imdb";
+	public static final String TMDB_TYPE_RSC_URI = MOVIE_ONT_BASE_URI + "tmdb";
 }

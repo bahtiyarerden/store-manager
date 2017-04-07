@@ -53,10 +53,12 @@ public class MongoDBTransformerStrategy extends TransformerStrategy {
 
 			String[] genres = genreText.split("\\|");
 
-			model.add(createStatement(objectId, movieId, MovieVocabulary.MOVIE_ID_PRP_URI, XSDDatatype.XSDint));
-			model.add(createStatement(objectId, title, MovieVocabulary.MOVIE_TITLE_PRP_URI, XSDDatatype.XSDstring));
+			model.add(createValueStatement(objectId, movieId, MovieVocabulary.MOVIE_ID_PRP_URI, XSDDatatype.XSDint));
+			model.add(
+					createValueStatement(objectId, title, MovieVocabulary.MOVIE_TITLE_PRP_URI, XSDDatatype.XSDstring));
 			for (String genre : genres) {
-				model.add(createStatement(objectId, genre, MovieVocabulary.MOVIE_GENRE_PRP_URI, XSDDatatype.XSDstring));
+				model.add(createValueStatement(objectId, genre, MovieVocabulary.MOVIE_GENRE_PRP_URI,
+						XSDDatatype.XSDstring));
 			}
 
 		}
@@ -65,7 +67,7 @@ public class MongoDBTransformerStrategy extends TransformerStrategy {
 		return writer.toString();
 	}
 
-	private Statement createStatement(ObjectId objectId, Object objectVal, String prpUri, XSDDatatype datatype) {
+	private Statement createValueStatement(ObjectId objectId, Object objectVal, String prpUri, XSDDatatype datatype) {
 		return ResourceFactory.createStatement(
 				ResourceFactory.createResource(MovieVocabulary.MOVIE_RSC_BASE_URI + objectId.toString()),
 				ResourceFactory.createProperty(prpUri),
