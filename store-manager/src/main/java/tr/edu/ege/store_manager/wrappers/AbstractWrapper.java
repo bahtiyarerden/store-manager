@@ -14,6 +14,10 @@ public abstract class AbstractWrapper {
 		transformer = new QueryTransformer(tStrategy);
 	}
 
-	public abstract String executeTransform(String query);
+	protected String executeTransform(String query) {
+		String result = executor.execute(query);
+		String transformedResult = transformer.transform(result);
+		return transformedResult;
+	}
 
 }

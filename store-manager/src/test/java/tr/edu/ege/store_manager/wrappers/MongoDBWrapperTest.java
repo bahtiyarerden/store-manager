@@ -1,4 +1,4 @@
-package tr.edu.ege.store_manager.wrappers.document;
+package tr.edu.ege.store_manager.wrappers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -17,6 +17,7 @@ import tr.edu.ege.store_manager.MovieVocabulary;
 import tr.edu.ege.store_manager.wrappers.AbstractWrapper;
 import tr.edu.ege.store_manager.wrappers.WrapperFactory;
 import tr.edu.ege.store_manager.wrappers.Wrappers;
+import tr.edu.ege.store_manager.wrappers.document.MongoDBWrapper;
 
 public class MongoDBWrapperTest {
 

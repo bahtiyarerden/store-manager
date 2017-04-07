@@ -13,11 +13,4 @@ public class MongoDBWrapper extends AbstractWrapper {
 		super(eStrategy, tStrategy);
 	}
 
-	@Override
-	public String executeTransform(String query) {
-		String result = executor.execute(query);
-		String transformedResult = transformer.transform(result);
-		return transformedResult;
-	}
-
 }
