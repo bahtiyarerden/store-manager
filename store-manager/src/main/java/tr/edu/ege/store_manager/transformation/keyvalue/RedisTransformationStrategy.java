@@ -2,7 +2,6 @@ package tr.edu.ege.store_manager.transformation.keyvalue;
 
 import java.io.StringWriter;
 
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -14,7 +13,6 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
-import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
