@@ -1,4 +1,4 @@
-package tr.edu.ege.store_manager.wrappers;
+package tr.edu.ege.store_manager.wrappers.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
