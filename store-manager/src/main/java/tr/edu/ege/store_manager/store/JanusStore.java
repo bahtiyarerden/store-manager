@@ -24,8 +24,8 @@ public class JanusStore {
 		return store;
 	}
 
-	public JanusGraph getGraph() {
-		return graph;
+	public static JanusGraph getGraph() {
+		return getInstance().graph;
 	}
 
 	public void close() {
