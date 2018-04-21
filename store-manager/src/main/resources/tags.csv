@@ -334,7 +334,6 @@ userId,movieId,tag,timestamp
 347,122886,star,1463337213
 353,4721,As historicaly correct as Germany winning WW2,1140389056
 353,4721,but still a fun movie.,1140389056
-353,7376,"The Rocks ""finest"" work need I say more?",1140389511
 353,31221,Try not to mistake this for an episode of Alias,1140389595
 353,32025,Mossad,1142686944
 353,35836,dumb,1137217440
@@ -538,7 +537,6 @@ userId,movieId,tag,timestamp
 377,54290,Why the terrorists hate us,1187054169
 380,40614,predictable,1148077862
 402,260,coming of age,1443393648
-402,260,"space epic, science fiction, hero's journey",1443393664
 423,111,cult film,1354033605
 423,111,Martin Scorsese,1354033608
 423,111,social commentary,1354033602
@@ -1288,7 +1286,7 @@ userId,movieId,tag,timestamp
 630,260,classic sci-fi,1443807766
 630,260,series,1443807803
 652,146501,gay,1449533216
-660,260,"imaginary world, characters, story, philosophical",1436680217
+660,260,imaginary world characters story philosophical,1436680217
 660,260,script,1436680177
 660,135518,meaning of life,1436680885
 660,135518,philosophical,1436680885

@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
-			<version>4.7.1</version>
+			<version>4.3</version>
 		</dependency>
 
 
@@ -82,6 +82,9 @@
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
 				<version>4.3</version>
+				<configuration>
+					<outputDirectory>src/main/java/tr/edu/ege/store_manager/query/grammar</outputDirectory>	
+				</configuration>
 				<executions>
 					<execution>
 						<id>antlr</id>

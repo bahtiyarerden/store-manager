@@ -13,10 +13,13 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.EdgeLabel;
 import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.janusgraph.core.Multiplicity;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.diskstorage.BackendException;
+import org.junit.Before;
 import org.junit.Test;
 
 import tr.edu.ege.store_manager.wrapper.store.interfaces.JanusStore;
@@ -24,6 +27,12 @@ import tr.edu.ege.store_manager.wrapper.store.interfaces.JanusStore;
 public class JanusDataImportTest {
 	private static final String RATINGS_FIRST_LINE_VALUE = "userId,movieId,rating,timestamp";
 	private static final String TAGS_FIRST_LINE_VALUE = "userId,movieId,tag,timestamp";
+
+	// @Before
+	// public void before() throws BackendException {
+	// JanusGraph graph = JanusStore.getGraph();
+	// JanusGraphFactory.drop(graph);
+	// }
 
 	@Test
 	public void importData() throws Exception {
@@ -72,22 +81,23 @@ public class JanusDataImportTest {
 		PropertyKey userId = mgm.makePropertyKey("userId").dataType(Short.class).make();
 		mgm.buildIndex("byUserIdComposite", Vertex.class).addKey(userId).buildCompositeIndex();
 
-		PropertyKey movieId = mgm.makePropertyKey("movieId").dataType(Short.class).make();
+		PropertyKey movieId = mgm.makePropertyKey("movieId").dataType(Integer.class).make();
 		mgm.buildIndex("byMovieIdComposite", Vertex.class).addKey(movieId).buildCompositeIndex();
 
 		// Edge property
 
 		PropertyKey rateValue = mgm.makePropertyKey("rate").dataType(Double.class).make();
 		PropertyKey timestamp = mgm.makePropertyKey("timestamp").dataType(Long.class).make();
-		EdgeLabel rated = mgm.makeEdgeLabel("rated").signature(rateValue, timestamp).multiplicity(Multiplicity.ONE2ONE)
+		EdgeLabel rated = mgm.makeEdgeLabel("rated").signature(rateValue, timestamp).multiplicity(Multiplicity.ONE2MANY)
 				.make();
-		mgm.buildEdgeIndex(rated, "ratingByTime", Direction.OUT, Order.decr, timestamp);
+		// mgm.buildEdgeIndex(rated, "ratingByTime", Direction.OUT, Order.decr,
+		// timestamp);
 
 		PropertyKey tagValue = mgm.makePropertyKey("tag").dataType(String[].class).make();
 		EdgeLabel tag = mgm.makeEdgeLabel("tagged").signature(tagValue, timestamp).multiplicity(Multiplicity.ONE2MANY)
 				.make();
 		mgm.buildEdgeIndex(tag, "taggingByTime", Direction.OUT, Order.decr, timestamp);
-		mgm.buildIndex("byTagMixed", Edge.class).addKey(tagValue).buildMixedIndex("search");
+		mgm.buildIndex("byTagMixed", Edge.class).addKey(tagValue).buildCompositeIndex();
 
 		mgm.makeVertexLabel("user").make();
 		mgm.makeVertexLabel("movie").make();
