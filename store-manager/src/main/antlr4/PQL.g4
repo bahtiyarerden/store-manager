@@ -49,22 +49,40 @@ sql_stmt
 
 select_stmt
 	 : K_SELECT result_column ( ',' result_column )*
-	   K_FROM subquery_stmt ( ',' subquery_stmt )* 
+	   K_FROM OPEN_CURLY_BRACKET subquery_stmt ( ',' subquery_stmt )* CLOSE_CURLY_BRACKET
+	   (K_JOIN OPEN_CURLY_BRACKET subjoin_stmt (K_AND subjoin_stmt)* CLOSE_CURLY_BRACKET)?
 	 ;
  
 result_column
-	 : '*'
+	 : alias'.'join_variable
 	 ;
  
 subquery_stmt
 	 : 
-	 	OPEN_CURLY_BRACKET
 	 		OPEN_SQUARE_BRACKET 
 	 			sub_query 
-	 		CLOSE_SQUARE_BRACKET 
-	 		'@' database_name
-	 	CLOSE_CURLY_BRACKET
+	 		CLOSE_SQUARE_BRACKET
+	 		'#' database_name K_AS alias
 	 ;
+
+subjoin_stmt
+	:
+		join_pointer '=' join_pointer
+	;	
+
+join_pointer
+	:
+		alias'.'join_variable
+	;
+
+join_variable
+	:
+		any_name
+	;
+alias
+	:
+		any_name
+	;
 	 
 sub_query
 	:
@@ -648,7 +666,6 @@ K_WITHOUT : W I T H O U T;
 IDENTIFIER
  : '"' (~'"' | '""')* '"'
  | '`' (~'`' | '``')* '`'
- | '[' ~']'* ']'
  | [a-zA-Z_] [a-zA-Z_0-9]* // TODO check: needs more chars in set
  ;
 

@@ -1,10 +1,10 @@
 package tr.edu.ege.store_manager.wrapper.transformation;
 
-public class QueryTransformer {
+public class ResultTransformer {
 
 	private TransformerStrategy strategy;
 
-	public QueryTransformer(TransformerStrategy strategy) {
+	public ResultTransformer(TransformerStrategy strategy) {
 		this.strategy = strategy;
 	}
 

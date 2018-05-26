@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -35,7 +38,7 @@ public class MongoDBTransformerStrategy extends TransformerStrategy {
 		Model model = ModelFactory.createDefaultModel();
 		for (Object object : list) {
 			BasicDBObject document = (BasicDBObject) object;
-
+			System.out.println(document);
 			/*
 			 * This code block get properties dynamically from schema.
 			 */
@@ -62,6 +65,7 @@ public class MongoDBTransformerStrategy extends TransformerStrategy {
 			}
 
 		}
+
 		StringWriter writer = new StringWriter();
 		RDFDataMgr.write(writer, model, RDFFormat.RDFJSON);
 		return writer.toString();

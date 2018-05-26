@@ -27,7 +27,6 @@ public class MongoDBExecutionStrategy extends ExecutionStrategy {
 		for (Document doc : documents) {
 			list.add(doc);
 		}
-		System.out.println(JSON.serialize(list));
 		return JSON.serialize(list);
 	}
 
