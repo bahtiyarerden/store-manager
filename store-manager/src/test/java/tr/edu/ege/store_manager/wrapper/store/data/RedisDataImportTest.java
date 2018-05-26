@@ -29,11 +29,7 @@ public class RedisDataImportTest {
 				String[] fields = str.split(",");
 				assertNotNull(fields);
 				assertTrue(fields.length == 2 || fields.length == 3);
-				if (fields.length == 2) {
-					RedisStore.getInstance().insertList(fields[0], fields[1]);
-				} else {
-					RedisStore.getInstance().insertList(fields[0], fields[1], fields[2]);
-				}
+				RedisStore.getInstance().insert(fields[0], fields[1]);
 			});
 			assertEquals(9125, RedisStore.getInstance().getDBSize(0));
 		}

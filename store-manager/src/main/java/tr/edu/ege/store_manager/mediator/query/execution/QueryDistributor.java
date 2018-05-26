@@ -21,7 +21,7 @@ public class QueryDistributor {
 	public void distribute(List<QueryAssignment> queryAssignments) {
 		for (QueryAssignment assignment : queryAssignments) {
 			AbstractWrapper wrapper = WrapperFactory.create(wrappers.get(assignment.getConnection()));
-			//wrapper.executeTransform(assignment);
+			wrapper.executeTransform(assignment);
 		}
 	}
 

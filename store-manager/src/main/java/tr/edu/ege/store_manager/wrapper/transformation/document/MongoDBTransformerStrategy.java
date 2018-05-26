@@ -1,81 +1,48 @@
 package tr.edu.ege.store_manager.wrapper.transformation.document;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.bson.types.ObjectId;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.engine.binding.Binding;
+import org.apache.jena.sparql.engine.binding.BindingHashMap;
+import org.apache.jena.sparql.resultset.JSONOutput;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 
-import tr.edu.ege.store_manager.Utils;
-import tr.edu.ege.store_manager.wrapper.MovieVocabulary;
+import tr.edu.ege.store_manager.wrapper.QueryIteratorWrap;
 import tr.edu.ege.store_manager.wrapper.transformation.TransformerStrategy;
 
 public class MongoDBTransformerStrategy extends TransformerStrategy {
 
 	@Override
-	public String transform(String result) {
+	public String transform(String result, List<String> variables) {
 		BasicDBList list = (BasicDBList) JSON.parse(result);
-		Model model = ModelFactory.createDefaultModel();
+		List<Binding> bindings = new ArrayList<Binding>();
+
 		for (Object object : list) {
 			BasicDBObject document = (BasicDBObject) object;
-			System.out.println(document);
-			/*
-			 * This code block get properties dynamically from schema.
-			 */
-
-			// String schemaStr = Utils.readSchema("document_schema.json");
-			// BasicDBObject schema = (BasicDBObject) JSON.parse(schemaStr);
-			// Set<Entry<String, Object>> entrySet = schema.entrySet();
-			// for (Entry<String, Object> entry : entrySet) {
-			// System.out.println(entry.getKey());
-			// }
-			ObjectId objectId = document.getObjectId("_id");
-			String movieId = document.getString("movieId");
-			String title = document.getString("title");
-			String genreText = document.getString("genres");
-
-			String[] genres = genreText.split("\\|");
-
-			model.add(createValueStatement(objectId, movieId, MovieVocabulary.MOVIE_ID_PRP_URI, XSDDatatype.XSDint));
-			model.add(
-					createValueStatement(objectId, title, MovieVocabulary.MOVIE_TITLE_PRP_URI, XSDDatatype.XSDstring));
-			for (String genre : genres) {
-				model.add(createValueStatement(objectId, genre, MovieVocabulary.MOVIE_GENRE_PRP_URI,
-						XSDDatatype.XSDstring));
+			BindingHashMap bindingHashMap = new BindingHashMap();
+			for (String var : variables) {
+				bindingHashMap.add(Var.alloc(var), NodeFactory.createLiteral(document.getString(var)));
 			}
-
+			bindings.add(bindingHashMap);
 		}
 
-		StringWriter writer = new StringWriter();
-		RDFDataMgr.write(writer, model, RDFFormat.RDFJSON);
-		return writer.toString();
-	}
+		QueryIteratorWrap iteratorWrap = new QueryIteratorWrap(bindings);
+		ResultSet resultSet = ResultSetFactory.create(iteratorWrap, variables);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ResultSetFormatter.outputAsJSON(outputStream, resultSet);
 
-	private Statement createValueStatement(ObjectId objectId, Object objectVal, String prpUri, XSDDatatype datatype) {
-		return ResourceFactory.createStatement(
-				ResourceFactory.createResource(MovieVocabulary.MOVIE_RSC_BASE_URI + objectId.toString()),
-				ResourceFactory.createProperty(prpUri),
-				ResourceFactory.createTypedLiteral(String.valueOf(objectVal), datatype));
+		return new String(outputStream.toByteArray());
 	}
 
 }

@@ -34,6 +34,12 @@ public class RedisStore {
 		}
 	}
 
+	public void insert(String key, String val) {
+		try (Jedis jedis = jedisPool.getResource()) {
+			jedis.append(key, val);
+		}
+	}
+
 	public long getDBSize(int dbNumber) {
 		try (Jedis jedis = jedisPool.getResource()) {
 			jedis.select(dbNumber);

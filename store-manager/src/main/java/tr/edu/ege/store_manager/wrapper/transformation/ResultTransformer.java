@@ -1,5 +1,7 @@
 package tr.edu.ege.store_manager.wrapper.transformation;
 
+import java.util.List;
+
 public class ResultTransformer {
 
 	private TransformerStrategy strategy;
@@ -8,8 +10,8 @@ public class ResultTransformer {
 		this.strategy = strategy;
 	}
 
-	public String transform(String result) {
-		return this.strategy.transform(result);
+	public String transform(String result, List<String> variables) {
+		return this.strategy.transform(result, variables);
 	}
 
 }
