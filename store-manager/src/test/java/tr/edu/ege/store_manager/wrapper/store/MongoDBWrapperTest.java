@@ -37,11 +37,12 @@ public class MongoDBWrapperTest {
 		AbstractWrapper wrapper = WrapperFactory.create(Wrappers.MongoDB);
 		List<String> variables = new ArrayList<String>();
 		variables.add("movieId");
-		variables.add("genres");
+		//variables.add("genres");
 		QueryAssignment assignment = new QueryAssignment();
-		assignment.setQuery("{\"title\" : \"Casino (1995)\"}");
+		assignment.setQuery("{\"title\" : \"Fight Club (1999)\"}");
 		assignment.setResultColumns(variables);
 		String result = wrapper.executeTransform(assignment);
+		System.out.println(result);
 		assertEquals("Transformed MongoDB Result", result);
 	}
 

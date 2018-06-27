@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>tr.edu.ege.multistore</groupId>
@@ -36,24 +37,22 @@
 			<artifactId>jedis</artifactId>
 			<version>2.9.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.thinkaurelius.titan/titan-core -->
+
+		<!-- https://mvnrepository.com/artifact/org.neo4j.driver/neo4j-java-driver -->
 		<dependency>
-			<groupId>org.janusgraph</groupId>
-			<artifactId>janusgraph-core</artifactId>
-			<version>0.2.0</version>
+			<groupId>org.neo4j.driver</groupId>
+			<artifactId>neo4j-java-driver</artifactId>
+			<version>1.6.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.janusgraph/janusgraph-cassandra -->
+
+		<!-- https://mvnrepository.com/artifact/org.neo4j/neo4j -->
 		<dependency>
-			<groupId>org.janusgraph</groupId>
-			<artifactId>janusgraph-cassandra</artifactId>
-			<version>0.2.0</version>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j</artifactId>
+			<version>3.4.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.janusgraph/janusgraph-es -->
-		<dependency>
-			<groupId>org.janusgraph</groupId>
-			<artifactId>janusgraph-es</artifactId>
-			<version>0.2.0</version>
-		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
 		<dependency>
 			<groupId>org.antlr</groupId>
@@ -83,7 +82,7 @@
 				<artifactId>antlr4-maven-plugin</artifactId>
 				<version>4.3</version>
 				<configuration>
-					<outputDirectory>src/main/java/tr/edu/ege/store_manager/query/grammar</outputDirectory>	
+					<outputDirectory>src/main/java/tr/edu/ege/store_manager/query/grammar</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>

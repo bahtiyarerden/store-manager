@@ -30,10 +30,11 @@ public class RedisWrapperTest {
 		List<String> variables = new ArrayList<String>();
 		variables.add("imdbId");
 		QueryAssignment assignment = new QueryAssignment();
-		assignment.setQuery("671");
+		assignment.setQuery("2959");
 		assignment.setResultColumns(variables);
 
 		String result = wrapper.executeTransform(assignment);
+		System.out.println(result);
 		assertEquals("Transformed Redis Result", result);
 	}
 

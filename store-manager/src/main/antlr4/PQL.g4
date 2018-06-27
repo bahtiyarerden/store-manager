@@ -1,34 +1,6 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 by Bart Kiers
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Project      : sqlite-parser; an ANTLR4 grammar for SQLite
- *                https://github.com/bkiers/sqlite-parser
- * Developed by : Bart Kiers, bart@big-o.nl
- */
 grammar PQL;
+@header {package tr.edu.ege.store_manager.query.grammar;}
+
 
 parse
 	: ( sql_stmt | error )* EOF
@@ -48,22 +20,46 @@ sql_stmt
  	;
 
 select_stmt
-	 : K_SELECT result_column ( ',' result_column )*
-	   K_FROM OPEN_CURLY_BRACKET subquery_stmt ( ',' subquery_stmt )* CLOSE_CURLY_BRACKET
-	   (K_JOIN OPEN_CURLY_BRACKET subjoin_stmt (K_AND subjoin_stmt)* CLOSE_CURLY_BRACKET)?
-	 ;
+	: 
+	 	K_SELECT result_column ( ',' result_column )*
+	   	K_FROM OPEN_CURLY_BRACKET subquery_stmt ( ',' subquery_stmt )* CLOSE_CURLY_BRACKET
+	   	(K_JOIN OPEN_CURLY_BRACKET subjoin_stmt (K_AND subjoin_stmt)* CLOSE_CURLY_BRACKET)?
+	;
  
 result_column
-	 : alias'.'join_variable
-	 ;
+	: 
+	 	alias'.'join_variable
+	;
+	
+alias
+	:
+		any_name
+	;
  
 subquery_stmt
-	 : 
-	 		OPEN_SQUARE_BRACKET 
-	 			sub_query 
-	 		CLOSE_SQUARE_BRACKET
+	: 
+	 	'<sub>' 
+	 		sub_query 
+	 	'</sub>'
 	 		'#' database_name K_AS alias
-	 ;
+	;
+
+
+sub_query
+	:
+		sub_query_content
+	;
+
+sub_query_content
+	:
+		.*?
+	;
+
+
+database_name
+	:
+		any_name
+	; 
 
 subjoin_stmt
 	:
@@ -79,233 +75,23 @@ join_variable
 	:
 		any_name
 	;
-alias
-	:
-		any_name
-	;
-	 
-sub_query
-	:
-		any_name
-	;
-	
-database_name
-	:
-		any_name
-	; 
-	 
-	 
-	 
-	 
-OPEN_SQUARE_BRACKET : '[' ;
-CLOSE_SQUARE_BRACKET : ']' ;
-OPEN_CURLY_BRACKET : '{' ;
-CLOSE_CURLY_BRACKET : '}' ;
 
-
+table_name 
+ 	: 
+ 		any_name
+ 	;
+ 
 any_name
- : 
-	 IDENTIFIER 
-	 | keyword
-	 | STRING_LITERAL
-	 | '(' any_name ')'
- ;
-column_def
- : column_name type_name? column_constraint*
- ;
-
-type_name
- : name+? ( '(' signed_number ')'
-         | '(' signed_number ',' signed_number ')' )?
- ;
-
-column_constraint
- : ( K_CONSTRAINT name )?
-   ( K_PRIMARY K_KEY ( K_ASC | K_DESC )? conflict_clause K_AUTOINCREMENT?
-   | K_NOT? K_NULL conflict_clause
-   | K_UNIQUE conflict_clause
-   | K_CHECK '(' expr ')'
-   | K_DEFAULT (signed_number | literal_value | '(' expr ')')
-   | K_COLLATE collation_name
-   | foreign_key_clause
-   )
- ;
-
-conflict_clause
- : ( K_ON K_CONFLICT ( K_ROLLBACK
-                     | K_ABORT
-                     | K_FAIL
-                     | K_IGNORE
-                     | K_REPLACE
-                     )
-   )?
- ;
-
-/*
-    SQLite understands the following binary operators, in order from highest to
-    lowest precedence:
-
-    ||
-    *    /    %
-    +    -
-    <<   >>   &    |
-    <    <=   >    >=
-    =    ==   !=   <>   IS   IS NOT   IN   LIKE   GLOB   MATCH   REGEXP
-    AND
-    OR
-*/
-expr
- : literal_value
- | BIND_PARAMETER
- | ( ( database_name '.' )? table_name '.' )? column_name
- | unary_operator expr
- | expr '||' expr
- | expr ( '*' | '/' | '%' ) expr
- | expr ( '+' | '-' ) expr
- | expr ( '<<' | '>>' | '&' | '|' ) expr
- | expr ( '<' | '<=' | '>' | '>=' ) expr
- | expr ( '=' | '==' | '!=' | '<>' ) expr
- | expr K_NOT? K_IN ( '(' ( select_stmt
-                          | expr ( ',' expr )*
-                          )? 
-                      ')'
-                    | ( database_name '.' )? table_name )
- | expr K_AND expr
- | expr K_OR expr
- | function_name '(' ( K_DISTINCT? expr ( ',' expr )* | '*' )? ')'
- | '(' expr ')'
- | K_CAST '(' expr K_AS type_name ')'
- | expr K_COLLATE collation_name
- | expr K_NOT? ( K_LIKE | K_GLOB | K_REGEXP | K_MATCH ) expr ( K_ESCAPE expr )?
- | expr ( K_ISNULL | K_NOTNULL | K_NOT K_NULL )
- | expr K_IS K_NOT? expr
- | expr K_NOT? K_BETWEEN expr K_AND expr
- | ( ( K_NOT )? K_EXISTS )? '(' select_stmt ')'
- | K_CASE expr? ( K_WHEN expr K_THEN expr )+ ( K_ELSE expr )? K_END
- | raise_function
- ;
-
-foreign_key_clause
- : K_REFERENCES foreign_table ( '(' column_name ( ',' column_name )* ')' )?
-   ( ( K_ON ( K_DELETE | K_UPDATE ) ( K_SET K_NULL
-                                    | K_SET K_DEFAULT
-                                    | K_CASCADE
-                                    | K_RESTRICT
-                                    | K_NO K_ACTION )
-     | K_MATCH name
-     ) 
-   )*
-   ( K_NOT? K_DEFERRABLE ( K_INITIALLY K_DEFERRED | K_INITIALLY K_IMMEDIATE )? )?
- ;
-
-raise_function
- : K_RAISE '(' ( K_IGNORE 
-               | ( K_ROLLBACK | K_ABORT | K_FAIL ) ',' error_message )
-           ')'
- ;
-
-indexed_column
- : column_name ( K_COLLATE collation_name )? ( K_ASC | K_DESC )?
- ;
-
-table_constraint
- : ( K_CONSTRAINT name )?
-   ( ( K_PRIMARY K_KEY | K_UNIQUE ) '(' indexed_column ( ',' indexed_column )* ')' conflict_clause
-   | K_CHECK '(' expr ')'
-   | K_FOREIGN K_KEY '(' column_name ( ',' column_name )* ')' foreign_key_clause
-   )
- ;
-
-with_clause
- : K_WITH K_RECURSIVE? common_table_expression ( ',' common_table_expression )*
- ;
-
-qualified_table_name
- : ( database_name '.' )? table_name ( K_INDEXED K_BY index_name
-                                     | K_NOT K_INDEXED )?
- ;
-
-ordering_term
- : expr ( K_COLLATE collation_name )? ( K_ASC | K_DESC )?
- ;
-
-pragma_value
- : signed_number
- | name
- | STRING_LITERAL
- ;
-
-common_table_expression
- : table_name ( '(' column_name ( ',' column_name )* ')' )? K_AS '(' select_stmt ')'
- ;
-
-
-table_or_subquery
- : ( schema_name '.' )? table_name ( K_AS? table_alias )?
-   ( K_INDEXED K_BY index_name
-   | K_NOT K_INDEXED )?
- | ( schema_name '.' )? table_function_name '(' ( expr ( ',' expr )* )? ')' ( K_AS? table_alias )?
- | '(' ( table_or_subquery ( ',' table_or_subquery )*
-       | join_clause )
-   ')'
- | '(' select_stmt ')' ( K_AS? table_alias )?
- ;
-
-join_clause
- : table_or_subquery ( join_operator table_or_subquery join_constraint )*
- ;
-
-join_operator
- : ','
- | K_NATURAL? ( K_LEFT K_OUTER? | K_INNER | K_CROSS )? K_JOIN
- ;
-
-join_constraint
- : ( K_ON expr
-   | K_USING '(' column_name ( ',' column_name )* ')' )?
- ;
-
-
-compound_operator
- : K_UNION
- | K_UNION K_ALL
- | K_INTERSECT
- | K_EXCEPT
- ;
-
-signed_number
- : ( '+' | '-' )? NUMERIC_LITERAL
- ;
-
-literal_value
- : NUMERIC_LITERAL
- | STRING_LITERAL
- | BLOB_LITERAL
- | K_NULL
- | K_CURRENT_TIME
- | K_CURRENT_DATE
- | K_CURRENT_TIMESTAMP
- ;
-
-unary_operator
- : '-'
- | '+'
- | '~'
- | K_NOT
- ;
-
+ 	: 
+		IDENTIFIER 
+	 	| keyword
+	 	| STRING_LITERAL
+	 	| '(' any_name ')'
+	 	| NUMERIC_LITERAL
+ 	;
+ 	
 error_message
  : STRING_LITERAL
- ;
-
-module_argument // TODO check what exactly is permitted here
- : expr
- | column_def
- ;
-
-column_alias
- : IDENTIFIER
- | STRING_LITERAL
  ;
 
 keyword
@@ -437,81 +223,12 @@ keyword
 
 // TODO check all names below
 
-name
- : any_name
- ;
 
-function_name
- : any_name
- ;
-
-schema_name
- : any_name
- ;
-
-table_function_name
- : any_name
- ;
-
-table_name 
- : any_name
- ;
-
-table_or_index_name 
- : any_name
- ;
-
-new_table_name 
- : any_name
- ;
-
-column_name 
- : any_name
- ;
-
-collation_name 
- : any_name
- ;
-
-foreign_table 
- : any_name
- ;
-
-index_name 
- : any_name
- ;
-
-trigger_name
- : any_name
- ;
-
-view_name 
- : any_name
- ;
-
-module_name 
- : any_name
- ;
-
-pragma_name 
- : any_name
- ;
-
-savepoint_name 
- : any_name
- ;
-
-table_alias
- : IDENTIFIER
- | STRING_LITERAL
- | '(' table_alias ')'
- ;
-
-transaction_name
- : any_name
- ;
-
-
+	 
+OPEN_SQUARE_BRACKET : '[' ;
+CLOSE_SQUARE_BRACKET : ']' ;
+OPEN_CURLY_BRACKET : '{' ;
+CLOSE_CURLY_BRACKET : '}' ;
 SCOL : ';';
 DOT : '.';
 OPEN_PAR : '(';
@@ -695,13 +412,19 @@ MULTILINE_COMMENT
  : '/*' .*? ( '*/' | EOF ) -> channel(HIDDEN)
  ;
 
-SPACES
- : [ \u000B\t\r\n] -> channel(HIDDEN)
+WS
+ : [ \u000B\t\r\n]+ -> skip
  ;
+
+ANYTHING
+:
+	.*?
+;
 
 UNEXPECTED_CHAR
  : .
  ;
+ 
 
 fragment DIGIT : [0-9];
 

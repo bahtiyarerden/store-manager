@@ -1,5 +1,5 @@
 package tr.edu.ege.store_manager.wrapper.store;
 
 public enum Wrappers {
-	MongoDB, Redis, Janus
+	MongoDB, Redis, Neo4j
 }
